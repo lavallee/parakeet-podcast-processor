@@ -16,6 +16,12 @@ logs/
 exports/
 config/feeds.yaml
 
+# P³ Generated Output Files
+digest_*.md
+digest_*.json
+*.wav
+*.mp3
+
 # IDE
 .vscode/
 .idea/
