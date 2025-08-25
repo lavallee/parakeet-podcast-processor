@@ -144,3 +144,16 @@ p3/
 **Efficiency**: Process hours of podcasts in minutes with optimized pipeline
 
 Perfect for researchers, journalists, content creators, or anyone who needs to efficiently process large volumes of podcast content.
+
+## 🙏 **Attribution**
+
+This implementation is inspired by and builds upon the innovative work of **[Tomasz Tunguz](https://tomtunguz.com)**, founder of Theory Ventures, who pioneered many of these techniques for automated podcast analysis in venture capital. His "AP English teacher grading system" for iterative AI writing and multi-feed podcast processing approach formed the foundation for several features in this system.
+
+**Key innovations from Tunguz's system:**
+- ✍️ Blog post generation with AP English teacher grading (91/100 target)
+- 🔄 Iterative writing improvement loops  
+- 📱 Social media post generation
+- 🏢 Company/startup extraction for CRM integration
+- 📊 Investment thesis generation from podcast insights
+
+*Source: Tomasz Tunguz interview on "How I AI" podcast*
