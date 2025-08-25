@@ -28,6 +28,9 @@ p3 init
 # Configure feeds in config/feeds.yaml
 # Then run the complete pipeline:
 p3 fetch && p3 transcribe && p3 digest && p3 export
+
+# Or run the demo script:
+python demo.py
 ```
 
 ## ⚡ Performance
