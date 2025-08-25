@@ -14,8 +14,7 @@ venv/
 data/
 logs/
 exports/
-blog_posts/
-config/feeds.yaml
+# Note: Including config/feeds.yaml and blog_posts/ for demo purposes
 
 # P³ Generated Output Files
 digest_*.md
