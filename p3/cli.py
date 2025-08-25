@@ -15,6 +15,7 @@ from .downloader import PodcastDownloader
 from .transcriber import AudioTranscriber
 from .cleaner import TranscriptCleaner
 from .exporter import DigestExporter
+from .writer import BlogWriter
 
 console = Console()
 
@@ -241,13 +242,96 @@ def status(ctx):
 
 
 @main.command()
+@click.option('--topic', required=True, help='Blog post topic/angle')
+@click.option('--date', help='Date to use for digest (YYYY-MM-DD), defaults to today')
+@click.option('--target-grade', default=91.0, help='Target grade for AP English teacher (default: 91.0)')
+@click.pass_context
+def write(ctx, topic, date, target_grade):
+    """Generate blog post from podcast digest using AP English grading system.
+    
+    Inspired by Tomasz Tunguz's innovative iterative writing approach.
+    """
+    config = load_config(ctx.obj['config_path'])
+    db = ctx.obj['db']
+    
+    settings = config.get('settings', {})
+    llm_provider = settings.get('llm_provider', 'ollama')
+    llm_model = settings.get('llm_model', 'llama3.2:latest')
+    
+    # Parse date
+    if date:
+        try:
+            target_date = datetime.strptime(date, '%Y-%m-%d')
+        except ValueError:
+            console.print("[red]Invalid date format. Use YYYY-MM-DD[/red]")
+            return
+    else:
+        target_date = datetime.now()
+    
+    # Get summaries for the date
+    summaries = db.get_summaries_by_date(target_date)
+    
+    if not summaries:
+        console.print(f"[yellow]No summaries found for {target_date.date()}[/yellow]")
+        console.print("Run 'p3 digest' first to generate summaries")
+        return
+    
+    writer = BlogWriter(
+        db=db,
+        llm_provider=llm_provider,
+        llm_model=llm_model,
+        target_grade=target_grade
+    )
+    
+    console.print(f"[blue]Generating blog post: '{topic}'[/blue]")
+    console.print(f"Using {len(summaries)} podcast summaries from {target_date.date()}")
+    console.print(f"Target grade: {target_grade}/100 (inspired by Tomasz Tunguz)")
+    
+    # Use the first summary as primary source (could be enhanced to combine multiple)
+    primary_summary = summaries[0]
+    
+    with console.status("[bold green]Writing and grading blog post..."):
+        blog_result = writer.generate_blog_post_from_digest(topic, primary_summary)
+    
+    # Show results
+    console.print(f"\n[green]✓ Blog post generated![/green]")
+    console.print(f"Final Grade: {blog_result['final_grade']} ({blog_result['final_score']}/100)")
+    console.print(f"Iterations: {len(blog_result['iterations'])}")
+    
+    # Save blog post
+    file_path = writer.save_blog_post(blog_result)
+    console.print(f"Saved to: {file_path}")
+    
+    # Generate social media posts
+    console.print(f"\n[blue]Generating social media posts...[/blue]")
+    social_posts = writer.generate_social_posts(blog_result)
+    
+    # Display social posts
+    console.print("\n[cyan]📱 Twitter Posts:[/cyan]")
+    for i, post in enumerate(social_posts['twitter'], 1):
+        console.print(f"{i}. {post}")
+    
+    console.print("\n[cyan]💼 LinkedIn Posts:[/cyan]")
+    for i, post in enumerate(social_posts['linkedin'], 1):
+        console.print(f"{i}. {post[:100]}...")
+    
+    # Show final blog post preview
+    console.print(f"\n[cyan]📄 Blog Post Preview:[/cyan]")
+    console.print("-" * 50)
+    preview = blog_result['final_post'][:500]
+    console.print(f"{preview}...")
+    console.print("-" * 50)
+    console.print(f"[green]Complete post saved to: {file_path}[/green]")
+
+
+@main.command()
 @click.pass_context  
 def init(ctx):
     """Initialize P³ configuration and directories."""
     console.print("[blue]Initializing P³...[/blue]")
     
     # Create directories
-    dirs = ['data', 'config', 'logs', 'data/audio', 'exports']
+    dirs = ['data', 'config', 'logs', 'data/audio', 'exports', 'blog_posts']
     for dir_name in dirs:
         Path(dir_name).mkdir(parents=True, exist_ok=True)
         console.print(f"✓ Created directory: {dir_name}")
@@ -272,6 +356,7 @@ def init(ctx):
     console.print("2. Run 'p3 fetch' to download episodes")
     console.print("3. Run 'p3 transcribe' to transcribe audio")
     console.print("4. Run 'p3 digest' to generate summaries")
+    console.print("5. Run 'p3 write --topic \"Your Topic\"' to generate blog posts")
 
 
 if __name__ == '__main__':

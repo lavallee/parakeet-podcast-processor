@@ -4,11 +4,15 @@
 
 Transform podcasts into structured summaries using cutting-edge Apple Silicon ML acceleration.
 
+> **Inspired by [Tomasz Tunguz](https://tomtunguz.com)**'s innovative podcast processing system described in his "How I AI" interview. This implementation builds on his pioneering work in automated podcast analysis for venture capital and business intelligence.
+
 ## ⚡ Key Features
 
 - **🎧 Smart Audio Processing**: RSS feed monitoring + ffmpeg normalization
 - **🚀 Lightning Fast Transcription**: Parakeet MLX (30x faster than Whisper on Apple Silicon)
 - **🧠 Local LLM Analysis**: Ollama integration for structured summarization
+- **✍️ AI Blog Generation**: Iterative writing with AP English teacher grading system
+- **📱 Social Media Posts**: Auto-generate Twitter and LinkedIn content
 - **💾 Efficient Storage**: DuckDB for fast queries and analysis
 - **📊 Rich Outputs**: Markdown and JSON exports with topics, themes, quotes, and company mentions
 - **🔒 100% Local**: No API keys required, complete privacy
@@ -28,6 +32,9 @@ p3 init
 # Configure feeds in config/feeds.yaml
 # Then run the complete pipeline:
 p3 fetch && p3 transcribe && p3 digest && p3 export
+
+# Generate blog posts from digest (Tunguz's innovation):
+p3 write --topic "AI's Impact on Software Development"
 
 # Or run the demo script:
 python demo.py
@@ -83,6 +90,7 @@ RSS → ffmpeg → Parakeet MLX → Ollama → DuckDB → Export
 - `p3 transcribe` - Convert audio to text with Parakeet MLX
 - `p3 digest` - Generate structured summaries with Ollama
 - `p3 export` - Export daily digests (markdown/JSON)
+- `p3 write --topic "Your Topic"` - Generate blog posts with AP English grading
 - `p3 status` - Show processing pipeline status
 
 ## 🔧 Configuration
