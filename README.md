@@ -117,7 +117,9 @@ p3/
 │   └── cli.py             # Command-line interface
 ├── config/feeds.yaml      # Podcast feed configuration
 ├── data/                  # Audio files + DuckDB database
-└── exports/               # Generated digests
+├── exports/               # Generated digests
+├── digest_YYYY-MM-DD.md   # Generated markdown digests
+└── digest_YYYY-MM-DD.json # Generated JSON digests
 ```
 
 ## 🚀 Why P³?
